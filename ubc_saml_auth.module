@@ -1,0 +1,90 @@
+<?php
+
+/**
+ * This module adds "protect by path" functionality to simplesamlphp_auth
+ * 
+ * For now, you need to hardcode your whitelisted paths
+ * TODO: Create an admin UI for adding your whietlisted paths
+ *
+ * Note: This module currently works only on nodes. 
+ * For Views, you can use Views access control to set the 
+ * 'access cwl protected content'permission.
+ *
+ * Maintain your Whitelists in the following two functions:
+ * ubc_saml_auth_getCWLWhitelist() for a list of whitelisted paths
+ * ubc_saml_auth_pathIsInWildcardWhitelist() for a list of whitelisted wildcard rules
+ */
+
+define('UBC_SAML_PERMISSION', 'access cwl protected content');
+
+/**
+ * List paths aliases that should be CWL protected
+ */
+function ubc_saml_auth_getCWLWhitelist() {
+
+  #################################################
+  ####### CREATE YOUR CUSTOM PROTECTED LIST #######
+  #################################################
+
+  $protected_list = ['secure', 'cwl'];
+  return $protected_list;
+}
+
+/**
+ * List wildcard aliases, which end with "/*"
+ *
+ * @param $path - A path alias (not a system path)
+ */
+function ubc_saml_auth_pathIsInWildcardWhitelist($path) {
+
+  #################################################
+  ####### CREATE YOUR CUSTOM PROTECTED LIST #######
+  #################################################
+
+  $protected_list = array();
+  $protected_list[] = 'cwl/*';
+  $protected_list[] = 'support-resources/research-funding-support/cwl/*';
+
+  foreach($protected_list as $expression) {
+
+    $length = strlen($expression) - strlen('/*');
+    $path_match = substr($path, 0, $length);
+
+    if ($path_match == substr($expression, 0, -2)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Implements hook_permission
+ */
+function ubc_saml_auth_permission() {
+
+  return array(
+    UBC_SAML_PERMISSION => array(
+      'title' => t('Access CWL Protected Content'),
+    )
+  );
+}
+
+/**
+ * Implements hook_node_access
+ */
+function ubc_saml_auth_node_access($node, $op, $account) {
+
+  $path = drupal_get_path_alias('node/'.$node->nid);
+  $protected_list = ubc_saml_auth_getCWLWhitelist();
+
+  if (!user_access(UBC_SAML_PERMISSION)) {
+    if (in_array($path, $protected_list)) {
+      drupal_goto('saml_login', array('query' => array('ReturnTo' => $path)));
+    }
+    elseif (ubc_saml_auth_pathIsInWildcardWhitelist($path)) {
+      drupal_goto('saml_login', array('query' => array('ReturnTo' => $path)));
+    }
+  }
+}
+
+

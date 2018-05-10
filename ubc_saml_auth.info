@@ -1,0 +1,7 @@
+name = UBC SAML Auth
+description = SAML Auth
+core = 7.x
+version = 7.x-1.x
+package = UBC IT Web Services
+
+dependencies[] = simplesamlphp_auth:simplesamlphp_auth
