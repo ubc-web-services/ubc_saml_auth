@@ -87,4 +87,32 @@ function ubc_saml_auth_node_access($node, $op, $account) {
   }
 }
 
+/**
+ * Implements
+ */
+function ubc_saml_auth_admin() {
+	$form = array();
+	$form['ubc_saml_auth_protected_path'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Protected paths'),
+		'#default_value' => variable_get('ubc_saml_auth_protected_path', ''),
+		'#description' => t("The list of protected paths separated by commas."),
+    '#required' => FALSE,
+	);
+	return system_settings_form($form);
+}
 
+/**
+ *	Implements hook_menu
+ */
+function ubc_saml_auth_menu() {
+	$items = array();
+	$items['admin/settings/ubc_saml_auth'] = array(
+		'title' => 'UBC SAML Auth settings',
+		'description' => 'Description of your UBC SAML Auth settings page.',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('ubc_saml_auth_admin'),
+		'access arguments' => array('administer ubc_saml_auth settings'),
+		'type' => MENU_NORMAL_ITEM,
+	);
+}
