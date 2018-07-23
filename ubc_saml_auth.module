@@ -108,11 +108,19 @@ function ubc_saml_auth_node_access($node, $op, $account) {
   $protected_list = ubc_saml_auth_getCWLWhitelist();
 
   if (!user_access(UBC_SAML_PERMISSION)) {
-    if (in_array($path, $protected_list)) {
-      drupal_goto('saml_login', array('query' => array('ReturnTo' => $path)));
-    }
-    elseif (ubc_saml_auth_pathIsInWildcardWhitelist($path)) {
-      drupal_goto('saml_login', array('query' => array('ReturnTo' => $path)));
+
+    $UBC_PSH_BRANCH = getenv('PLATFORM_BRANCH');
+
+    $rtn_url = $base_url.'/node/'.$node->nid;
+
+    if ((in_array($path, $protected_list)) || (ubc_saml_auth_pathIsInWildcardWhitelist($path))) {
+
+      if($UBC_PSH_BRANCH == 'master') {
+        drupal_goto('saml_login', array('query' => array('ReturnTo' => $rtn_url)));
+      }      
+      else {
+        watchdog('UBC_SAML_AUTH', 'Whitelist Path: '.$rtn_url);
+      }
     }
   }
 }
