@@ -18,15 +18,49 @@
 define('UBC_SAML_PERMISSION', 'access cwl protected content');
 
 /**
+ * Implements
+ */
+function ubc_saml_auth_admin() {
+  $form = array();
+  $form['ubc_saml_auth_protected_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Protected paths'),
+    '#default_value' => variable_get('ubc_saml_auth_protected_path', ''),
+    '#description' => t("The list of paths aliases that should be CWL protected separated by commas."),
+    '#required' => FALSE,
+  );
+  $form['ubc_saml_auth_wildcard'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Protected paths'),
+    '#default_value' => variable_get('ubc_saml_auth_wildcard', ''),
+    '#description' => t("The list of wildcard aliases, which end with \"/*\" separated by commas."),
+    '#required' => FALSE,
+  );
+  return system_settings_form($form);
+}
+
+/**
+ *  Implements hook_menu
+ */
+function ubc_saml_auth_menu() {
+  $items = array();
+  $items['admin/config/content/ubc_saml_auth'] = array(
+    'title' => 'UBC SAML Auth settings',
+    'description' => 'Description of your UBC SAML Auth settings page.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ubc_saml_auth_admin'),
+    'access arguments' => array('administer ubc_saml_auth settings'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+/**
  * List paths aliases that should be CWL protected
  */
 function ubc_saml_auth_getCWLWhitelist() {
 
-  #################################################
-  ####### CREATE YOUR CUSTOM PROTECTED LIST #######
-  #################################################
-
-  //$protected_list = ['secure', 'cwl'];
   $protected_list = explode(",", variable_get('ubc_saml_auth_protected_path', ''));
   return $protected_list;
 }
@@ -38,14 +72,8 @@ function ubc_saml_auth_getCWLWhitelist() {
  */
 function ubc_saml_auth_pathIsInWildcardWhitelist($path) {
 
-  #################################################
-  ####### CREATE YOUR CUSTOM PROTECTED LIST #######
-  #################################################
-
-  //$protected_list = array();
   $protected_list = explode(",", variable_get('ubc_saml_auth_wildcard', ''));
   $protected_list[] = 'cwl/*';
-  //$protected_list[] = 'support-resources/research-funding-support/cwl/*';
 
   foreach($protected_list as $expression) {
 
@@ -89,41 +117,3 @@ function ubc_saml_auth_node_access($node, $op, $account) {
   }
 }
 
-/**
- * Implements
- */
-function ubc_saml_auth_admin() {
-	$form = array();
-	$form['ubc_saml_auth_protected_path'] = array(
-		'#type' => 'textfield',
-		'#title' => t('Protected paths'),
-		'#default_value' => variable_get('ubc_saml_auth_protected_path', ''),
-		'#description' => t("The list of paths aliases that should be CWL protected separated by commas."),
-    '#required' => FALSE,
-	);
-	$form['ubc_saml_auth_wildcard'] = array(
-		'#type' => 'textfield',
-		'#title' => t('Protected paths'),
-		'#default_value' => variable_get('ubc_saml_auth_wildcard', ''),
-		'#description' => t("The list of wildcard aliases, which end with \"/*\" separated by commas."),
-    '#required' => FALSE,
-	);
-	return system_settings_form($form);
-}
-
-/**
- *	Implements hook_menu
- */
-function ubc_saml_auth_menu() {
-	$items = array();
-	$items['admin/config/content/ubc_saml_auth'] = array(
-		'title' => 'UBC SAML Auth settings',
-		'description' => 'Description of your UBC SAML Auth settings page.',
-		'page callback' => 'drupal_get_form',
-		'page arguments' => array('ubc_saml_auth_admin'),
-		'access arguments' => array('administer ubc_saml_auth settings'),
-		'type' => MENU_NORMAL_ITEM,
-	);
-
-	return $items;
-}

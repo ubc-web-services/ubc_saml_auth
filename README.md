@@ -4,9 +4,6 @@ A Drupal module which adds "protect by path" functionality to simplesamlphp_auth
 /**
  * This module adds "protect by path" functionality to simplesamlphp_auth
  * 
- * For now, you need to hardcode your whitelisted paths
- * TODO: Create an admin UI for adding your whietlisted paths
- *
  * Note: This module currently works only on nodes. 
  * For Views, you can use Views access control to set the 
  * 'access cwl protected content'permission.
