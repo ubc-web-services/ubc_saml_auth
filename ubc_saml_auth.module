@@ -126,3 +126,31 @@ function ubc_saml_auth_node_access($node, $op, $account) {
   }
 }
 
+
+/*
+ * Create a CWL Login Button with a dynamic destination variable
+ */
+
+function ubc_saml_auth_block_info() {
+  $blocks['ubc_saml_auth_loginButton'] = array(
+    'info' => t('CWL Login Button with dynamic destination argument'),
+  );
+
+  return $blocks;
+}
+
+function ubc_saml_auth_block_view($delta = '') {
+  switch($delta) {
+    case 'ubc_saml_auth_loginButton':
+      $block['subject'] = t('CWL Login Button with dynamic destination argument');
+      $block['content'] = ubc_saml_auth_getLoginButton();
+      break;
+  }
+  return $block; 
+}
+
+function ubc_saml_auth_getLoginButton() {
+  $destination = '?destination='.request_path();
+  return '<div class="cwl-login"><a href="/saml_login'.$destination.'"><span>CWL</span> Login</a></div>';
+}
+
