@@ -80,7 +80,10 @@ function ubc_saml_auth_pathIsInWildcardWhitelist($path) {
     $length = strlen($expression) - strlen('/*');
     $path_match = substr($path, 0, $length);
 
-    if ($path_match == substr($expression, 0, -2)) {
+    if ($path == substr($expression, 0, -2)) {
+      return false;
+    }
+    elseif ($path_match == substr($expression, 0, -2)) {
       return true;
     }
   }
