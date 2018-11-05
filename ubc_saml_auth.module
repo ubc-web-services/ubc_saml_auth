@@ -80,7 +80,10 @@ function ubc_saml_auth_pathIsInWildcardWhitelist($path) {
     $length = strlen($expression) - strlen('/*');
     $path_match = substr($path, 0, $length);
 
-    if ($path_match == substr($expression, 0, -2)) {
+    if ($path == substr($expression, 0, -2)) {
+      return false;
+    }
+    elseif ($path_match == substr($expression, 0, -2)) {
       return true;
     }
   }
@@ -112,7 +115,8 @@ function ubc_saml_auth_node_access($node, $op, $account) {
     $UBC_PSH_BRANCH = getenv('PLATFORM_BRANCH');
 
     global $base_url; 
-    $rtn_url = $base_url.'/node/'.$node->nid;
+    #$rtn_url = $base_url.'/node/'.$node->nid;
+    $rtn_url = $base_url.'/'.$path;
 
     if ((in_array($path, $protected_list)) || (ubc_saml_auth_pathIsInWildcardWhitelist($path))) {
 
