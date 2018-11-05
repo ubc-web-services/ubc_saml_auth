@@ -107,6 +107,10 @@ function ubc_saml_auth_permission() {
  */
 function ubc_saml_auth_node_access($node, $op, $account) {
 
+  if(is_object($node) === FALSE) {
+    return;
+  }
+
   $path = drupal_get_path_alias('node/'.$node->nid);
   $protected_list = ubc_saml_auth_getCWLWhitelist();
 
