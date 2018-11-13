@@ -119,10 +119,14 @@ function ubc_saml_auth_node_access($node, $op, $account) {
     $UBC_PSH_BRANCH = getenv('PLATFORM_BRANCH');
 
     global $base_url; 
-    #$rtn_url = $base_url.'/node/'.$node->nid;
     $rtn_url = $base_url.'/'.$path;
 
     if ((in_array($path, $protected_list)) || (ubc_saml_auth_pathIsInWildcardWhitelist($path))) {
+
+      $loggedIn = user_is_logged_in();
+      if($loggedIn) {
+        return NODE_ACCESS_DENY;
+      }
 
       if($UBC_PSH_BRANCH == 'master') {
         drupal_goto('saml_login', array('query' => array('ReturnTo' => $rtn_url)));
