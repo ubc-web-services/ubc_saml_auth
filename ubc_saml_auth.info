@@ -6,3 +6,5 @@ package = UBC IT Web Services
 
 dependencies[] = simplesamlphp_auth:simplesamlphp_auth
 configure = admin/config/content/ubc_saml_auth
+
+stylesheets[all][] = css/ubc_saml_auth.css

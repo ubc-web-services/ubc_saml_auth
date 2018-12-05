@@ -148,21 +148,42 @@ function ubc_saml_auth_block_info() {
     'info' => t('CWL Login Button with dynamic destination argument'),
   );
 
+  $blocks['ubc_saml_auth_logoutButton'] = array(
+    'info' => t('CWL Logout Button with dynamic destination argument'),
+  );
   return $blocks;
 }
 
 function ubc_saml_auth_block_view($delta = '') {
   switch($delta) {
     case 'ubc_saml_auth_loginButton':
-      $block['subject'] = t('CWL Login Button with dynamic destination argument');
-      $block['content'] = ubc_saml_auth_getLoginButton();
+      $blocks['subject'] = t('CWL Login Button with dynamic destination argument');
+      $blocks['content'] = ubc_saml_auth_getLoginButton();
       break;
-  }
-  return $block; 
+    case 'ubc_saml_auth_logoutButton':
+      module_invoke('simplesamlphp_auth', 'isEnabled');
+      if (_simplesamlphp_auth_isEnabled()) {
+        global $_simplesamlphp_auth_as;
+        $blocks['subject'] = t('CWL Logout Button with dynamic destination argument');
+        $blocks['content'] = ubc_saml_auth_getLogoutButton($_simplesamlphp_auth_as);
+      }
+      break;
+    }
+  return $blocks; 
 }
 
 function ubc_saml_auth_getLoginButton() {
   $destination = '?destination='.request_path();
   return '<div class="cwl-login"><a href="/saml_login'.$destination.'"><span>CWL</span> Login</a></div>';
 }
+
+function ubc_saml_auth_getLogoutButton(&$_simplesamlphp_auth_as) {
+  if (!$_simplesamlphp_auth_as->isAuthenticated()) {
+      return '<div class="cwl-logout"><a href="/user/logout"><span>not</span> simplesaml authenticated</a></div>';
+  }
+  else {
+    return '<div class="cwl-logout"><a href="/user/logout"><span>CWL</span> Logout</a></div>';
+  }
+}
+
 
