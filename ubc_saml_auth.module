@@ -146,6 +146,7 @@ function ubc_saml_auth_node_access($node, $op, $account) {
 function ubc_saml_auth_block_info() {
   $blocks['ubc_saml_auth_loginButton'] = array(
     'info' => t('CWL Login Button with dynamic destination argument'),
+    'cache' => DRUPAL_NO_CACHE,  
   );
 
   return $blocks;
@@ -162,7 +163,17 @@ function ubc_saml_auth_block_view($delta = '') {
 }
 
 function ubc_saml_auth_getLoginButton() {
-  $destination = '?destination='.request_path();
-  return '<div class="cwl-login"><a href="/saml_login'.$destination.'"><span>CWL</span> Login</a></div>';
+
+  $destination = request_path();
+  $destination = filter_xss($destination);
+
+  $source_dest = drupal_lookup_path('source', $destination);
+  if($source_dest === FALSE) {
+    $source_dest = "home";
+  }
+
+  $cwl_login_path = "/saml_login?destination=".$source_dest;
+
+  return '<div class="cwl-login"><a href="'.$cwl_login_path.'"><span>CWL</span> Login</a></div>';
 }
 
