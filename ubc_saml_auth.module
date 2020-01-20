@@ -129,6 +129,7 @@ function ubc_saml_auth_node_access($node, $op, $account) {
       }
 
       if($UBC_PSH_BRANCH == 'master') {
+        watchdog('UBC_SAML_AUTH', 'drupal_goto');
         drupal_goto('saml_login', array('query' => array('ReturnTo' => $rtn_url)));
       }      
       else {
