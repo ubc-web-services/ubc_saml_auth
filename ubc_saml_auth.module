@@ -131,8 +131,13 @@ function ubc_saml_auth_node_access($node, $op, $account) {
       if($UBC_PSH_BRANCH == 'master') {
         if($_SERVER['SCRIPT_NAME'] != '/cron.php') {
           watchdog('UBC_SAML_AUTH', 'drupal_goto: '.$_SERVER['SCRIPT_NAME']);
-          watchdog('UBC_SAML_AUTH', 'OP: '.$op);
-          drupal_goto('saml_login', array('query' => array('ReturnTo' => $rtn_url)));
+          
+          if (!path_is_admin(current_path())) {
+            drupal_goto('saml_login', array('query' => array('ReturnTo' => $rtn_url)));
+          }
+          else {
+            watchdog('UBC_SAML_AUTH', 'Is Admin Path');
+          }
         }
       }
       else {
